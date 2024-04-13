@@ -203,14 +203,53 @@ const unsigned char bitmap_sound [] PROGMEM = {
 	0x00, 0x00, 0x03, 0xfc, 0x40, 0x04, 0x44, 0x44, 0x4e, 0x24, 0x5e, 0x94, 0x5e, 0x94, 0x4e, 0x24, 
 	0x44, 0x44, 0x40, 0x00, 0x7f, 0xc0
 };
-
+#define PIN_TRIG_DREAPTA 3
+#define PIN_ECHO_DREAPTA 2
+#define PIN_TRIG_CENTRU 5
+#define PIN_ECHO_CENTRU 4
+#define PIN_TRIG_STANGA 7
+#define PIN_ECHO_STANGA 6
 
 void setup(){
   u8g.setFont(u8g_font_tpssb);
   u8g.setColorIndex(1);
+  Serial.begin(115200);
+  pinMode(PIN_TRIG_DREAPTA, OUTPUT);
+  pinMode(PIN_ECHO_DREAPTA, INPUT);
+  pinMode(PIN_TRIG_CENTRU, OUTPUT);
+  pinMode(PIN_ECHO_CENTRU, INPUT);
+  pinMode(PIN_TRIG_STANGA, OUTPUT);
+  pinMode(PIN_ECHO_STANGA, INPUT);
 }
 
 void loop(){
+  digitalWrite(PIN_TRIG_DREAPTA, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG_DREAPTA, LOW);
+  int durationDreapta = pulseIn(PIN_ECHO_DREAPTA, HIGH);
+  int distanceDreapta = durationDreapta/58;
+  Serial.print("Senzor dreapta:");
+  Serial.println(distanceDreapta);
+  delay(500);
+
+  digitalWrite(PIN_TRIG_CENTRU, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG_CENTRU, LOW);
+  int durationCentru = pulseIn(PIN_ECHO_CENTRU, HIGH);
+  int distanceCentru = durationCentru/58;
+  Serial.print("Senzor centru:");
+  Serial.println(distanceCentru);
+  delay(500);
+
+  digitalWrite(PIN_TRIG_STANGA, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG_STANGA, LOW);
+  int durationStanga = pulseIn(PIN_ECHO_STANGA, HIGH);
+  int distanceStanga = durationStanga/58;
+  Serial.print("Senzor stanga:");
+  Serial.println(distanceStanga);
+  delay(500);
+
   u8g.firstPage();
   do{
     u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
