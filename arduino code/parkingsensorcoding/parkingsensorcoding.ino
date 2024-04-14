@@ -210,6 +210,14 @@ const unsigned char bitmap_sound [] PROGMEM = {
 #define PIN_TRIG_STANGA 7
 #define PIN_ECHO_STANGA 6
 
+enum Distances {
+  FOARTE_DEPARTE = 200,
+  DEPARTE = 100,
+  APROAPE = 50,
+  FOARTE_APROAPE = 20,
+  PREA_APROAPE = 5
+};
+
 void setup(){
   u8g.setFont(u8g_font_tpssb);
   u8g.setColorIndex(1);
@@ -223,6 +231,7 @@ void setup(){
 }
 
 void loop(){
+  //HC-SR04 - dreapta
   digitalWrite(PIN_TRIG_DREAPTA, HIGH);
   delayMicroseconds(10);
   digitalWrite(PIN_TRIG_DREAPTA, LOW);
@@ -232,6 +241,7 @@ void loop(){
   Serial.println(distanceDreapta);
   delay(500);
 
+  //HC-SR04 - mijloc
   digitalWrite(PIN_TRIG_CENTRU, HIGH);
   delayMicroseconds(10);
   digitalWrite(PIN_TRIG_CENTRU, LOW);
@@ -241,6 +251,7 @@ void loop(){
   Serial.println(distanceCentru);
   delay(500);
 
+  //HC-SR04 - stanga
   digitalWrite(PIN_TRIG_STANGA, HIGH);
   delayMicroseconds(10);
   digitalWrite(PIN_TRIG_STANGA, LOW);
@@ -249,7 +260,7 @@ void loop(){
   Serial.print("Senzor stanga:");
   Serial.println(distanceStanga);
   delay(500);
-
+  
   u8g.firstPage();
   do{
     u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
@@ -257,7 +268,7 @@ void loop(){
     /*
     u8g.drawBitmapP(85 ,0 ,16/8 ,10 ,bitmap_no_sound);
     */
-  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,bitmap_senzor_stanga1_on);
+  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,bitmap_senzor_stanga1_on);  
   u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,bitmap_senzor_stanga2_on);
   u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,bitmap_senzor_stanga3_on);
   u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,bitmap_senzor_stanga4_on);
@@ -269,8 +280,7 @@ void loop(){
   u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,bitmap_senzor_dreapta2_on);
   u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,bitmap_senzor_dreapta3_on);
   u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,bitmap_senzor_dreapta4_on);
-
-/*
+  /*
   u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,bitmap_senzor_stanga1_off);
   u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,bitmap_senzor_stanga2_off);
   u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,bitmap_senzor_stanga3_off);
@@ -285,4 +295,5 @@ void loop(){
   u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,bitmap_senzor_dreapta4_off);
 */
   }while(u8g.nextPage() );
+  
 }
