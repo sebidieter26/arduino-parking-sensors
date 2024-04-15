@@ -1,6 +1,6 @@
 #include <U8glib.h>
 
-U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST);
+U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST);
 
 // 'cm_unit', 16x12px
 const unsigned char bitmap_cm_unit [] PROGMEM = {
@@ -224,7 +224,7 @@ struct sensor_data{
 struct sensor_data sensor[NUMBER_OF_SENSORS];
 
 int min_dist = 2; //minimum distance where the sensors are printing labels on the oled
-int max_dist = 50; //maximum distance where the sensors are printing labels on the oled
+int max_dist = 100; //maximum distance where the sensors are printing labels on the oled
 
 //creating variables for calculating the labels printed on the oled
 int dist_step_01;
@@ -276,10 +276,10 @@ void loop(){
  		Serial.print("Sensor ");
 		Serial.print(i);		
 		Serial.print("  ");				
-		Serial.println(sensor[i].distanta_cm);		
+		Serial.println(sensor[i].distanta_cm);
+    delay(500);		
   }
   
-	delay(500);
 
   u8g.firstPage();
   do{
