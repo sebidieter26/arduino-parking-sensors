@@ -224,7 +224,7 @@ struct sensor_data{
 struct sensor_data sensor[NUMBER_OF_SENSORS];
 
 int min_dist = 2; //minimum distance where the sensors are printing labels on the oled
-int max_dist = 100; //maximum distance where the sensors are printing labels on the oled
+int max_dist = 50; //maximum distance where the sensors are printing labels on the oled
 
 //creating variables for calculating the labels printed on the oled
 int dist_step_01;
@@ -271,8 +271,16 @@ void loop(){
 
     sensor[i].distanta_cm = pulseIn(sensor[i].echo_pin, HIGH);
     sensor[i].distanta_cm = sensor[i].distanta_cm / 58;
+  
+  //printing the values on serial port
+ 		Serial.print("Sensor ");
+		Serial.print(i);		
+		Serial.print("  ");				
+		Serial.println(sensor[i].distanta_cm);		
   }
   
+	delay(500);
+
   u8g.firstPage();
   do{
   u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
