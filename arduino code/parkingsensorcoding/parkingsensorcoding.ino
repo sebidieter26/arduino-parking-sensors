@@ -209,91 +209,81 @@ const unsigned char bitmap_sound [] PROGMEM = {
 #define PIN_ECHO_CENTRU 4
 #define PIN_TRIG_STANGA 7
 #define PIN_ECHO_STANGA 6
+#define NUMBER_OF_SENSORS 3
 
-enum Distances {
-  FOARTE_DEPARTE = 200,
-  DEPARTE = 100,
-  APROAPE = 50,
-  FOARTE_APROAPE = 20,
-  PREA_APROAPE = 5
+struct sensor_data{
+  int echo_pin;
+  int trig_pin;
+  int distanta_cm;
 };
 
+struct sensor_data sensor[NUMBER_OF_SENSORS];
+
+int min_dist = 2;
+int max_dist = 100;
+int dist_step_01;
+int dist_step_02;
+int dist_step_03;
+int dist_step_04;
+
 void setup(){
+  sensor[0].trig_pin = PIN_TRIG_DREAPTA;
+	sensor[0].echo_pin = PIN_ECHO_DREAPTA;
+
+	sensor[1].trig_pin = PIN_TRIG_CENTRU;
+	sensor[1].echo_pin = PIN_ECHO_CENTRU;
+
+	sensor[2].trig_pin = PIN_TRIG_STANGA;
+	sensor[2].echo_pin = PIN_ECHO_STANGA;
+
+  pinMode(sensor[0].trig_pin, OUTPUT);
+  pinMode(sensor[0].echo_pin, INPUT);		
+  pinMode(sensor[1].trig_pin, OUTPUT);
+  pinMode(sensor[1].echo_pin, INPUT);		
+  pinMode(sensor[2].trig_pin, OUTPUT);
+  pinMode(sensor[2].echo_pin, INPUT);	
+
+
+  dist_step_01 = min_dist + round((max_dist - min_dist)/4.0*4.0);
+  dist_step_02 = min_dist + round((max_dist - min_dist)/4.0*3.0);
+  dist_step_03 = min_dist + round((max_dist - min_dist)/4.0*2.0);
+  dist_step_04 = min_dist + round((max_dist - min_dist)/4.0*1.0);
+
   u8g.setFont(u8g_font_tpssb);
   u8g.setColorIndex(1);
+
   Serial.begin(115200);
-  pinMode(PIN_TRIG_DREAPTA, OUTPUT);
-  pinMode(PIN_ECHO_DREAPTA, INPUT);
-  pinMode(PIN_TRIG_CENTRU, OUTPUT);
-  pinMode(PIN_ECHO_CENTRU, INPUT);
-  pinMode(PIN_TRIG_STANGA, OUTPUT);
-  pinMode(PIN_ECHO_STANGA, INPUT);
 }
 
 void loop(){
-  //HC-SR04 - dreapta
-  digitalWrite(PIN_TRIG_DREAPTA, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_TRIG_DREAPTA, LOW);
-  int durationDreapta = pulseIn(PIN_ECHO_DREAPTA, HIGH);
-  int distanceDreapta = durationDreapta/58;
-  Serial.print("Senzor dreapta:");
-  Serial.println(distanceDreapta);
-  delay(500);
+  for(int i = 0; i<NUMBER_OF_SENSORS; i++){
+    digitalWrite(sensor[i].trig_pin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(sensor[i].trig_pin, LOW);
 
-  //HC-SR04 - mijloc
-  digitalWrite(PIN_TRIG_CENTRU, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_TRIG_CENTRU, LOW);
-  int durationCentru = pulseIn(PIN_ECHO_CENTRU, HIGH);
-  int distanceCentru = durationCentru/58;
-  Serial.print("Senzor centru:");
-  Serial.println(distanceCentru);
-  delay(500);
-
-  //HC-SR04 - stanga
-  digitalWrite(PIN_TRIG_STANGA, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_TRIG_STANGA, LOW);
-  int durationStanga = pulseIn(PIN_ECHO_STANGA, HIGH);
-  int distanceStanga = durationStanga/58;
-  Serial.print("Senzor stanga:");
-  Serial.println(distanceStanga);
-  delay(500);
+    sensor[i].distanta_cm = pulseIn(sensor[i].echo_pin, HIGH);
+    sensor[i].distanta_cm = sensor[i].distanta_cm / 58;
+  }
   
   u8g.firstPage();
   do{
-    u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
-    u8g.drawBitmapP(85 ,0 ,16/8 ,11 ,bitmap_sound);
-    /*
-    u8g.drawBitmapP(85 ,0 ,16/8 ,10 ,bitmap_no_sound);
-    */
-  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,bitmap_senzor_stanga1_on);  
-  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,bitmap_senzor_stanga2_on);
-  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,bitmap_senzor_stanga3_on);
-  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,bitmap_senzor_stanga4_on);
-  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,bitmap_senzor_centru1_on);
-  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,bitmap_senzor_centru2_on);
-  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,bitmap_senzor_centru3_on);
-  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,bitmap_senzor_centru4_on);
-  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,bitmap_senzor_dreapta1_on);
-  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,bitmap_senzor_dreapta2_on);
-  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,bitmap_senzor_dreapta3_on);
-  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,bitmap_senzor_dreapta4_on);
-  /*
-  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,bitmap_senzor_stanga1_off);
-  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,bitmap_senzor_stanga2_off);
-  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,bitmap_senzor_stanga3_off);
-  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,bitmap_senzor_stanga4_off);
-  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,bitmap_senzor_centru1_off);
-  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,bitmap_senzor_centru2_off);
-  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,bitmap_senzor_centru3_off);
-  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,bitmap_senzor_centru4_off);
-  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,bitmap_senzor_dreapta1_off);
-  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,bitmap_senzor_dreapta2_off);
-  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,bitmap_senzor_dreapta3_off);
-  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,bitmap_senzor_dreapta4_off);
-*/
+  u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
+  u8g.drawBitmapP(85 ,0 ,16/8 ,11 ,bitmap_sound);
+
+  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,sensor[0].distanta_cm > dist_step_01 ? bitmap_senzor_stanga1_on : bitmap_senzor_stanga1_off);  
+  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,sensor[0].distanta_cm > dist_step_02 ? bitmap_senzor_stanga2_on : bitmap_senzor_stanga2_off);
+  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,sensor[0].distanta_cm > dist_step_03 ? bitmap_senzor_stanga3_on : bitmap_senzor_stanga3_off);
+  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,sensor[0].distanta_cm > dist_step_04 ? bitmap_senzor_stanga4_on : bitmap_senzor_stanga4_off);
+
+  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,sensor[1].distanta_cm > dist_step_01 ? bitmap_senzor_centru1_on : bitmap_senzor_centru1_off);
+  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,sensor[1].distanta_cm > dist_step_02 ? bitmap_senzor_centru2_on : bitmap_senzor_centru2_off);
+  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,sensor[1].distanta_cm > dist_step_03 ? bitmap_senzor_centru3_on : bitmap_senzor_centru3_off);
+  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,sensor[1].distanta_cm > dist_step_04 ? bitmap_senzor_centru4_on : bitmap_senzor_centru4_off);
+
+  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,sensor[2].distanta_cm > dist_step_01 ? bitmap_senzor_dreapta1_on : bitmap_senzor_dreapta1_off);
+  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,sensor[2].distanta_cm > dist_step_02 ? bitmap_senzor_dreapta2_on : bitmap_senzor_dreapta2_off);
+  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,sensor[2].distanta_cm > dist_step_03 ? bitmap_senzor_dreapta3_on : bitmap_senzor_dreapta3_off);
+  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,sensor[2].distanta_cm > dist_step_04 ? bitmap_senzor_dreapta4_on : bitmap_senzor_dreapta4_off);
+
   }while(u8g.nextPage() );
-  
 }
