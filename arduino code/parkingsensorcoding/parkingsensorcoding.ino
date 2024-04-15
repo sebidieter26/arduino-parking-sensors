@@ -203,30 +203,37 @@ const unsigned char bitmap_sound [] PROGMEM = {
 	0x00, 0x00, 0x03, 0xfc, 0x40, 0x04, 0x44, 0x44, 0x4e, 0x24, 0x5e, 0x94, 0x5e, 0x94, 0x4e, 0x24, 
 	0x44, 0x44, 0x40, 0x00, 0x7f, 0xc0
 };
+//define the pins of trigger and echo pins of the HC-SR04's
 #define PIN_TRIG_DREAPTA 3
 #define PIN_ECHO_DREAPTA 2
 #define PIN_TRIG_CENTRU 5
 #define PIN_ECHO_CENTRU 4
 #define PIN_TRIG_STANGA 7
 #define PIN_ECHO_STANGA 6
+//define the number of sensors
 #define NUMBER_OF_SENSORS 3
 
+//grouping variables of the sensors in one structure
 struct sensor_data{
   int echo_pin;
   int trig_pin;
   int distanta_cm;
 };
 
+//addding an array the size of the number of sensors
 struct sensor_data sensor[NUMBER_OF_SENSORS];
 
-int min_dist = 2;
-int max_dist = 100;
+int min_dist = 2; //minimum distance where the sensors are printing labels on the oled
+int max_dist = 100; //maximum distance where the sensors are printing labels on the oled
+
+//creating variables for calculating the labels printed on the oled
 int dist_step_01;
 int dist_step_02;
 int dist_step_03;
 int dist_step_04;
 
 void setup(){
+  //attributing pins to the sensors
   sensor[0].trig_pin = PIN_TRIG_DREAPTA;
 	sensor[0].echo_pin = PIN_ECHO_DREAPTA;
 
@@ -243,7 +250,7 @@ void setup(){
   pinMode(sensor[2].trig_pin, OUTPUT);
   pinMode(sensor[2].echo_pin, INPUT);	
 
-
+  //calculating the distance where the labels are switching between on and off
   dist_step_01 = min_dist + round((max_dist - min_dist)/4.0*4.0);
   dist_step_02 = min_dist + round((max_dist - min_dist)/4.0*3.0);
   dist_step_03 = min_dist + round((max_dist - min_dist)/4.0*2.0);
@@ -256,6 +263,7 @@ void setup(){
 }
 
 void loop(){
+  //starting the sensors,acquiring data and calculating the distance in centimeters
   for(int i = 0; i<NUMBER_OF_SENSORS; i++){
     digitalWrite(sensor[i].trig_pin, HIGH);
     delayMicroseconds(10);
