@@ -226,11 +226,11 @@ struct sensor_data sensor[NUMBER_OF_SENSORS];
 int min_dist = 2; //minimum distance where the sensors are printing labels on the oled
 int max_dist = 100; //maximum distance where the sensors are printing labels on the oled
 
-//creating variables for calculating the labels printed on the oled
-int dist_step_01;
-int dist_step_02;
-int dist_step_03;
-int dist_step_04;
+//assigning values to different danger areas for the OLED image
+int dist01 = 50;
+int dist02 = 25;
+int dist03 = 10;
+int dist04 = 5;
 
 void setup(){
   //attributing pins to the sensors
@@ -249,12 +249,6 @@ void setup(){
   pinMode(sensor[1].echo_pin, INPUT);		
   pinMode(sensor[2].trig_pin, OUTPUT);
   pinMode(sensor[2].echo_pin, INPUT);	
-
-  //calculating the distance where the labels are switching between on and off
-  dist_step_01 = min_dist + round((max_dist - min_dist)/4.0*4.0);
-  dist_step_02 = min_dist + round((max_dist - min_dist)/4.0*3.0);
-  dist_step_03 = min_dist + round((max_dist - min_dist)/4.0*2.0);
-  dist_step_04 = min_dist + round((max_dist - min_dist)/4.0*1.0);
 
   u8g.setFont(u8g_font_tpssb);
   u8g.setColorIndex(1);
@@ -286,20 +280,20 @@ void loop(){
   u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
   u8g.drawBitmapP(85 ,0 ,16/8 ,11 ,bitmap_sound);
 
-  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,sensor[0].distanta_cm > dist_step_01 ? bitmap_senzor_stanga1_on : bitmap_senzor_stanga1_off);  
-  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,sensor[0].distanta_cm > dist_step_02 ? bitmap_senzor_stanga2_on : bitmap_senzor_stanga2_off);
-  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,sensor[0].distanta_cm > dist_step_03 ? bitmap_senzor_stanga3_on : bitmap_senzor_stanga3_off);
-  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,sensor[0].distanta_cm > dist_step_04 ? bitmap_senzor_stanga4_on : bitmap_senzor_stanga4_off);
+  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,sensor[0].distanta_cm >= dist01 ? bitmap_senzor_stanga1_on : bitmap_senzor_stanga1_off);  
+  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,sensor[0].distanta_cm >= dist02 ? bitmap_senzor_stanga2_on : bitmap_senzor_stanga2_off);
+  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,sensor[0].distanta_cm >= dist03 ? bitmap_senzor_stanga3_on : bitmap_senzor_stanga3_off);
+  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,sensor[0].distanta_cm >= dist04 ? bitmap_senzor_stanga4_on : bitmap_senzor_stanga4_off);
 
-  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,sensor[1].distanta_cm > dist_step_01 ? bitmap_senzor_centru1_on : bitmap_senzor_centru1_off);
-  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,sensor[1].distanta_cm > dist_step_02 ? bitmap_senzor_centru2_on : bitmap_senzor_centru2_off);
-  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,sensor[1].distanta_cm > dist_step_03 ? bitmap_senzor_centru3_on : bitmap_senzor_centru3_off);
-  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,sensor[1].distanta_cm > dist_step_04 ? bitmap_senzor_centru4_on : bitmap_senzor_centru4_off);
+  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,sensor[1].distanta_cm >= dist01 ? bitmap_senzor_centru1_on : bitmap_senzor_centru1_off);
+  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,sensor[1].distanta_cm >= dist02 ? bitmap_senzor_centru2_on : bitmap_senzor_centru2_off);
+  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,sensor[1].distanta_cm >= dist03 ? bitmap_senzor_centru3_on : bitmap_senzor_centru3_off);
+  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,sensor[1].distanta_cm >= dist04 ? bitmap_senzor_centru4_on : bitmap_senzor_centru4_off);
 
-  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,sensor[2].distanta_cm > dist_step_01 ? bitmap_senzor_dreapta1_on : bitmap_senzor_dreapta1_off);
-  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,sensor[2].distanta_cm > dist_step_02 ? bitmap_senzor_dreapta2_on : bitmap_senzor_dreapta2_off);
-  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,sensor[2].distanta_cm > dist_step_03 ? bitmap_senzor_dreapta3_on : bitmap_senzor_dreapta3_off);
-  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,sensor[2].distanta_cm > dist_step_04 ? bitmap_senzor_dreapta4_on : bitmap_senzor_dreapta4_off);
+  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,sensor[2].distanta_cm >= dist01 ? bitmap_senzor_dreapta1_on : bitmap_senzor_dreapta1_off);
+  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,sensor[2].distanta_cm >= dist02 ? bitmap_senzor_dreapta2_on : bitmap_senzor_dreapta2_off);
+  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,sensor[2].distanta_cm >= dist03 ? bitmap_senzor_dreapta3_on : bitmap_senzor_dreapta3_off);
+  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,sensor[2].distanta_cm >= dist04 ? bitmap_senzor_dreapta4_on : bitmap_senzor_dreapta4_off);
 
   }while(u8g.nextPage() );
 }

@@ -1,6 +1,6 @@
 #include <U8glib.h>
 
-U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST);
+U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST);
 
 // 'cm_unit', 16x12px
 const unsigned char bitmap_cm_unit [] PROGMEM = {
@@ -203,47 +203,97 @@ const unsigned char bitmap_sound [] PROGMEM = {
 	0x00, 0x00, 0x03, 0xfc, 0x40, 0x04, 0x44, 0x44, 0x4e, 0x24, 0x5e, 0x94, 0x5e, 0x94, 0x4e, 0x24, 
 	0x44, 0x44, 0x40, 0x00, 0x7f, 0xc0
 };
+//define the pins of trigger and echo pins of the HC-SR04's
+#define PIN_TRIG_DREAPTA 3
+#define PIN_ECHO_DREAPTA 2
+#define PIN_TRIG_CENTRU 5
+#define PIN_ECHO_CENTRU 4
+#define PIN_TRIG_STANGA 7
+#define PIN_ECHO_STANGA 6
+//define the number of sensors
+#define NUMBER_OF_SENSORS 3
 
+//grouping variables of the sensors in one structure
+struct sensor_data{
+  int echo_pin;
+  int trig_pin;
+  int distanta_cm;
+};
+
+//addding an array the size of the number of sensors
+struct sensor_data sensor[NUMBER_OF_SENSORS];
+
+int min_dist = 2; //minimum distance where the sensors are printing labels on the oled
+int max_dist = 100; //maximum distance where the sensors are printing labels on the oled
+
+//creating variables for calculating the labels printed on the oled
+int dist01 = 50;
+int dist02 = 25;
+int dist03 = 10;
+int dist04 = 5;
 
 void setup(){
+  //attributing pins to the sensors
+  sensor[0].trig_pin = PIN_TRIG_DREAPTA;
+	sensor[0].echo_pin = PIN_ECHO_DREAPTA;
+
+	sensor[1].trig_pin = PIN_TRIG_CENTRU;
+	sensor[1].echo_pin = PIN_ECHO_CENTRU;
+
+	sensor[2].trig_pin = PIN_TRIG_STANGA;
+	sensor[2].echo_pin = PIN_ECHO_STANGA;
+
+  pinMode(sensor[0].trig_pin, OUTPUT);
+  pinMode(sensor[0].echo_pin, INPUT);		
+  pinMode(sensor[1].trig_pin, OUTPUT);
+  pinMode(sensor[1].echo_pin, INPUT);		
+  pinMode(sensor[2].trig_pin, OUTPUT);
+  pinMode(sensor[2].echo_pin, INPUT);	
+
   u8g.setFont(u8g_font_tpssb);
   u8g.setColorIndex(1);
+
+  Serial.begin(115200);
 }
 
 void loop(){
+  //starting the sensors,acquiring data and calculating the distance in centimeters
+  for(int i = 0; i<NUMBER_OF_SENSORS; i++){
+    digitalWrite(sensor[i].trig_pin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(sensor[i].trig_pin, LOW);
+
+    sensor[i].distanta_cm = pulseIn(sensor[i].echo_pin, HIGH);
+    sensor[i].distanta_cm = sensor[i].distanta_cm / 58;
+  
+  //printing the values on serial port
+ 		Serial.print("Sensor ");
+		Serial.print(i);		
+		Serial.print("  ");				
+		Serial.println(sensor[i].distanta_cm);
+    delay(500);		
+  }
+  
+
   u8g.firstPage();
   do{
-    u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
-    u8g.drawBitmapP(85 ,0 ,16/8 ,11 ,bitmap_sound);
-    /*
-    u8g.drawBitmapP(85 ,0 ,16/8 ,10 ,bitmap_no_sound);
-    */
-  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,bitmap_senzor_stanga1_on);
-  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,bitmap_senzor_stanga2_on);
-  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,bitmap_senzor_stanga3_on);
-  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,bitmap_senzor_stanga4_on);
-  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,bitmap_senzor_centru1_on);
-  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,bitmap_senzor_centru2_on);
-  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,bitmap_senzor_centru3_on);
-  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,bitmap_senzor_centru4_on);
-  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,bitmap_senzor_dreapta1_on);
-  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,bitmap_senzor_dreapta2_on);
-  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,bitmap_senzor_dreapta3_on);
-  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,bitmap_senzor_dreapta4_on);
+  u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
+  u8g.drawBitmapP(85 ,0 ,16/8 ,11 ,bitmap_sound);
 
-/*
-  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,bitmap_senzor_stanga1_off);
-  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,bitmap_senzor_stanga2_off);
-  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,bitmap_senzor_stanga3_off);
-  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,bitmap_senzor_stanga4_off);
-  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,bitmap_senzor_centru1_off);
-  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,bitmap_senzor_centru2_off);
-  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,bitmap_senzor_centru3_off);
-  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,bitmap_senzor_centru4_off);
-  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,bitmap_senzor_dreapta1_off);
-  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,bitmap_senzor_dreapta2_off);
-  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,bitmap_senzor_dreapta3_off);
-  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,bitmap_senzor_dreapta4_off);
-*/
+  u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,sensor[0].distanta_cm >= dist01 ? bitmap_senzor_stanga1_on : bitmap_senzor_stanga1_off);  
+  u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,sensor[0].distanta_cm >= dist02 ? bitmap_senzor_stanga2_on : bitmap_senzor_stanga2_off);
+  u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,sensor[0].distanta_cm >= dist03 ? bitmap_senzor_stanga3_on : bitmap_senzor_stanga3_off);
+  u8g.drawBitmapP(27 ,46 ,32/8 ,17 ,sensor[0].distanta_cm >= dist04 ? bitmap_senzor_stanga4_on : bitmap_senzor_stanga4_off);
+
+  u8g.drawBitmapP(48 ,13 ,32/8 ,14 ,sensor[1].distanta_cm >= dist01 ? bitmap_senzor_centru1_on : bitmap_senzor_centru1_off);
+  u8g.drawBitmapP(48 ,23 ,32/8 ,15 ,sensor[1].distanta_cm >= dist02 ? bitmap_senzor_centru2_on : bitmap_senzor_centru2_off);
+  u8g.drawBitmapP(48 ,35 ,32/8 ,13 ,sensor[1].distanta_cm >= dist03 ? bitmap_senzor_centru3_on : bitmap_senzor_centru3_off);
+  u8g.drawBitmapP(47 ,46 ,32/8 ,13 ,sensor[1].distanta_cm >= dist04 ? bitmap_senzor_centru4_on : bitmap_senzor_centru4_off);
+
+  u8g.drawBitmapP(80 ,13 ,32/8 ,22 ,sensor[2].distanta_cm >= dist01 ? bitmap_senzor_dreapta1_on : bitmap_senzor_dreapta1_off);
+  u8g.drawBitmapP(78 ,26 ,32/8 ,19 ,sensor[2].distanta_cm >= dist02 ? bitmap_senzor_dreapta2_on : bitmap_senzor_dreapta2_off);
+  u8g.drawBitmapP(75 ,35 ,32/8 ,21 ,sensor[2].distanta_cm >= dist03 ? bitmap_senzor_dreapta3_on : bitmap_senzor_dreapta3_off);
+  u8g.drawBitmapP(72 ,47 ,32/8 ,16 ,sensor[2].distanta_cm >= dist04 ? bitmap_senzor_dreapta4_on : bitmap_senzor_dreapta4_off);
+
   }while(u8g.nextPage() );
 }
