@@ -1,6 +1,6 @@
 #include <U8glib.h>
 
-U8GLIB_SH1106_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST);
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST);
 
 // 'cm_unit', 16x12px
 const unsigned char bitmap_cm_unit [] PROGMEM = {
@@ -213,6 +213,9 @@ const unsigned char bitmap_sound [] PROGMEM = {
 //define the number of sensors
 #define NUMBER_OF_SENSORS 3
 
+//define the buzzer
+#define BUZZER 8
+
 //grouping variables of the sensors in one structure
 struct sensor_data{
   int echo_pin;
@@ -224,13 +227,24 @@ struct sensor_data{
 struct sensor_data sensor[NUMBER_OF_SENSORS];
 
 int min_dist = 2; //minimum distance where the sensors are printing labels on the oled
-int max_dist = 100; //maximum distance where the sensors are printing labels on the oled
+int max_dist = 400; //maximum distance where the sensors are printing labels on the oled
 
-//assigning values to different danger areas for the OLED image
+//creating variables for calculating the labels printed on the oled
 int dist01 = 50;
 int dist02 = 25;
 int dist03 = 10;
 int dist04 = 5;
+
+unsigned long event1 = 1000;
+unsigned long event2 = 500;
+unsigned long event3 = 200;
+unsigned long event4 = 100;
+
+unsigned long prevTime1 = 0;
+unsigned long ms_from_start = 0;
+
+int BUZZER_state = 0;
+
 
 void setup(){
   //attributing pins to the sensors
@@ -241,7 +255,7 @@ void setup(){
 	sensor[1].echo_pin = PIN_ECHO_CENTRU;
 
 	sensor[2].trig_pin = PIN_TRIG_STANGA;
-	sensor[2].echo_pin = PIN_ECHO_STANGA;
+	sensor[2].echo_pin = PIN_ECHO_STANGA; 
 
   pinMode(sensor[0].trig_pin, OUTPUT);
   pinMode(sensor[0].echo_pin, INPUT);		
@@ -250,13 +264,17 @@ void setup(){
   pinMode(sensor[2].trig_pin, OUTPUT);
   pinMode(sensor[2].echo_pin, INPUT);	
 
+	pinMode(BUZZER, OUTPUT);
+
   u8g.setFont(u8g_font_tpssb);
   u8g.setColorIndex(1);
 
   Serial.begin(115200);
+
 }
 
 void loop(){
+		ms_from_start = millis();
   //starting the sensors,acquiring data and calculating the distance in centimeters
   for(int i = 0; i<NUMBER_OF_SENSORS; i++){
     digitalWrite(sensor[i].trig_pin, HIGH);
@@ -271,9 +289,24 @@ void loop(){
 		Serial.print(i);		
 		Serial.print("  ");				
 		Serial.println(sensor[i].distanta_cm);
-    delay(500);		
+    delay(500);	
+
+		if(sensor[i].distanta_cm  >= dist01){
+			if(ms_from_start - prevTime1 >= event1){
+				prevTime1 = ms_from_start;
+				if(BUZZER_state == 0){
+					BUZZER_state = 1;
+				} else{
+					BUZZER_state = 0;
+				}
+				digitalWrite(BUZZER, BUZZER_state);
+			}
+		}	
   }
-  
+
+
+
+
 
   u8g.firstPage();
   do{
