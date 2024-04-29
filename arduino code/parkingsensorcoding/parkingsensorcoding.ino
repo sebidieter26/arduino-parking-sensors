@@ -230,17 +230,20 @@ int min_dist = 2; //minimum distance where the sensors are printing labels on th
 int max_dist = 400; //maximum distance where the sensors are printing labels on the oled
 
 //creating variables for calculating the labels printed on the oled
-int dist01 = 50;
-int dist02 = 25;
+int dist01 = 30;
+int dist02 = 15;
 int dist03 = 10;
 int dist04 = 5;
 
 unsigned long event1 = 1000;
-unsigned long event2 = 500;
-unsigned long event3 = 200;
-unsigned long event4 = 100;
+unsigned long event2 = 50;
+unsigned long event3 = 20;
+unsigned long event4 = 5;
 
 unsigned long prevTime1 = 0;
+unsigned long prevTime2 = 0;
+unsigned long prevTime3 = 0;
+unsigned long prevTime4 = 0;
 unsigned long ms_from_start = 0;
 
 int BUZZER_state = 0;
@@ -303,10 +306,6 @@ void loop(){
 			}
 		}	
   }
-
-
-
-
 
   u8g.firstPage();
   do{
