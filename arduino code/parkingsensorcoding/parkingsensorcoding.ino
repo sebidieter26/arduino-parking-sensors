@@ -235,19 +235,69 @@ int dist02 = 15;
 int dist03 = 10;
 int dist04 = 5;
 
-unsigned long event1 = 1000;
-unsigned long event2 = 50;
-unsigned long event3 = 20;
-unsigned long event4 = 5;
+int buzzerState = LOW;
+unsigned long currentTime = 0;
+unsigned long previousBuzz = 0;
+unsigned long buzzPeriod1 = 500;
+unsigned long buzzPeriod2 = 200;
+unsigned long buzzPeriod3 = 100;
+unsigned long buzzPeriod4 = 50;
 
-unsigned long prevTime1 = 0;
-unsigned long prevTime2 = 0;
-unsigned long prevTime3 = 0;
-unsigned long prevTime4 = 0;
-unsigned long ms_from_start = 0;
+void Buzz(){
+	if(currentTime - previousBuzz >= buzzPeriod1){
+		previousBuzz = currentTime;
+		if(buzzerState == LOW){
+			buzzerState = HIGH;
+		}
+		else{
+			buzzerState = LOW;
+		}
+		digitalWrite(BUZZER,buzzerState);
+		Serial.println("buzz");
+	}
+}
 
-int BUZZER_state = 0;
+void Buzz2(){
+	if(currentTime - previousBuzz >= buzzPeriod2){
+		previousBuzz = currentTime;
+		if(buzzerState == LOW){
+			buzzerState = HIGH;
+		}
+		else{
+			buzzerState = LOW;
+		}
+		digitalWrite(BUZZER,buzzerState);
+		Serial.println("buzz2");
+	}
+}
 
+void Buzz3(){
+	if(currentTime - previousBuzz >= buzzPeriod3){
+		previousBuzz = currentTime;
+		if(buzzerState == LOW){
+			buzzerState = HIGH;
+		}
+		else{
+			buzzerState = LOW;
+		}
+		digitalWrite(BUZZER,buzzerState);
+		Serial.println("buzz3");
+	}
+}
+
+void Buzz4(){
+	if(currentTime - previousBuzz >= buzzPeriod4){
+		previousBuzz = currentTime;
+		if(buzzerState == LOW){
+			buzzerState = HIGH;
+		}
+		else{
+			buzzerState = LOW;
+		}
+		digitalWrite(BUZZER,buzzerState);
+		Serial.println("buzz4");
+	}
+}
 
 void setup(){
   //attributing pins to the sensors
@@ -277,7 +327,8 @@ void setup(){
 }
 
 void loop(){
-		ms_from_start = millis();
+
+	currentTime = millis();
   //starting the sensors,acquiring data and calculating the distance in centimeters
   for(int i = 0; i<NUMBER_OF_SENSORS; i++){
     digitalWrite(sensor[i].trig_pin, HIGH);
@@ -288,23 +339,23 @@ void loop(){
     sensor[i].distanta_cm = sensor[i].distanta_cm / 58;
   
   //printing the values on serial port
+
  		Serial.print("Sensor ");
 		Serial.print(i);		
 		Serial.print("  ");				
 		Serial.println(sensor[i].distanta_cm);
-    delay(500);	
 
-		if(sensor[i].distanta_cm  >= dist01){
-			if(ms_from_start - prevTime1 >= event1){
-				prevTime1 = ms_from_start;
-				if(BUZZER_state == 0){
-					BUZZER_state = 1;
-				} else{
-					BUZZER_state = 0;
-				}
-				digitalWrite(BUZZER, BUZZER_state);
-			}
-		}	
+    if(sensor[i].distanta_cm >= dist01){
+		Buzz();
+		}else if(sensor[i].distanta_cm >= dist02 && sensor[i].distanta_cm <= dist01){
+		Buzz2();
+		}else if(sensor[i].distanta_cm >= dist03 && sensor[i].distanta_cm <= dist02){
+		Buzz3();
+		}else if(sensor[i].distanta_cm >= dist04 && sensor[i].distanta_cm <= dist03){
+			Buzz4();
+		}else if(sensor[i].distanta_cm >= 0 && sensor[i].distanta_cm <= dist04){
+			digitalWrite(BUZZER, HIGH);
+		}
   }
 
   u8g.firstPage();
