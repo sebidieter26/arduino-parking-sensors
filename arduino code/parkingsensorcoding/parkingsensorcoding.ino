@@ -261,6 +261,10 @@ unsigned long blinkPeriod2 = 200;
 unsigned long blinkPeriod3 = 100;
 unsigned long blinkPeriod4 = 50;
 
+int redState = LOW;
+int greenState = LOW;
+int blueState = LOW;
+
 void Buzz(){
 	if(currentTime - previousBuzz >= buzzPeriod1){
 		previousBuzz = currentTime;
@@ -317,14 +321,20 @@ void Buzz4(){
 	}
 }
 
-void blink1(){
-	if(currentTime - previousBlink >= blinkPeriod1){
-		previousBlink = currentTime;
-
-		digitalWrite(RED1, LOW);
-		digitalWrite(GREEN1, HIGH);
-		digitalWrite(BLUE1, LOW);
-	}
+void blink(){
+  if(currentTime - previousBlink >= blinkPeriod1){
+    previousBlink = currentTime;
+    if(redState == LOW){
+      redState = HIGH;
+    }else if(greenState == LOW){
+      greenState = HIGH;
+    }else if(blueState == LOW){
+      blueState = HIGH;
+    }
+    digitalWrite(RED1,redState);
+    digitalWrite(GREEN1,redState);
+    digitalWrite(BLUE1,blueState);
+  }
 }
 
 void setup(){
@@ -395,7 +405,7 @@ void loop(){
 		}else if(sensor[i].distanta_cm >= 0 && sensor[i].distanta_cm <= dist04){
 			digitalWrite(BUZZER, HIGH);
 		}
-		blink1();
+  blink();
   }
 
   u8g.firstPage();
