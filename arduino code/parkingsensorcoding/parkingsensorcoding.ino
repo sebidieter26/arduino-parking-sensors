@@ -204,17 +204,29 @@ const unsigned char bitmap_sound [] PROGMEM = {
 	0x44, 0x44, 0x40, 0x00, 0x7f, 0xc0
 };
 //define the pins of trigger and echo pins of the HC-SR04's
-#define PIN_TRIG_DREAPTA 3
-#define PIN_ECHO_DREAPTA 2
-#define PIN_TRIG_CENTRU 5
-#define PIN_ECHO_CENTRU 4
-#define PIN_TRIG_STANGA 7
-#define PIN_ECHO_STANGA 6
+#define PIN_TRIG_DREAPTA 23
+#define PIN_ECHO_DREAPTA 22
+#define PIN_TRIG_CENTRU 25
+#define PIN_ECHO_CENTRU 24
+#define PIN_TRIG_STANGA 27
+#define PIN_ECHO_STANGA 26
 //define the number of sensors
 #define NUMBER_OF_SENSORS 3
 
 //define the buzzer
-#define BUZZER 8
+#define BUZZER 28
+
+//define rgb leds
+#define RED1 2
+#define GREEN1 3
+#define BLUE1 4
+#define RED2 5
+#define GREEN2 6
+#define BLUE2 7
+#define RED3 8
+#define GREEN3 9
+#define BLUE3 10
+
 
 //grouping variables of the sensors in one structure
 struct sensor_data{
@@ -242,6 +254,12 @@ unsigned long buzzPeriod1 = 500;
 unsigned long buzzPeriod2 = 200;
 unsigned long buzzPeriod3 = 100;
 unsigned long buzzPeriod4 = 50;
+
+unsigned long previousBlink = 0;
+unsigned long blinkPeriod1 = 500;
+unsigned long blinkPeriod2 = 200;
+unsigned long blinkPeriod3 = 100;
+unsigned long blinkPeriod4 = 50;
 
 void Buzz(){
 	if(currentTime - previousBuzz >= buzzPeriod1){
@@ -299,6 +317,16 @@ void Buzz4(){
 	}
 }
 
+void blink1(){
+	if(currentTime - previousBlink >= blinkPeriod1){
+		previousBlink = currentTime;
+
+		digitalWrite(RED1, LOW);
+		digitalWrite(GREEN1, HIGH);
+		digitalWrite(BLUE1, LOW);
+	}
+}
+
 void setup(){
   //attributing pins to the sensors
   sensor[0].trig_pin = PIN_TRIG_DREAPTA;
@@ -319,6 +347,16 @@ void setup(){
 
 	pinMode(BUZZER, OUTPUT);
 
+	pinMode(RED1, OUTPUT);
+	pinMode(GREEN1, OUTPUT);
+	pinMode(BLUE1, OUTPUT);
+	pinMode(RED2, OUTPUT);
+	pinMode(GREEN2, OUTPUT);
+	pinMode(BLUE2, OUTPUT);
+	pinMode(RED3, OUTPUT);
+	pinMode(GREEN3, OUTPUT);
+	pinMode(BLUE3, OUTPUT);
+
   u8g.setFont(u8g_font_tpssb);
   u8g.setColorIndex(1);
 
@@ -327,6 +365,7 @@ void setup(){
 }
 
 void loop(){
+
 
 	currentTime = millis();
   //starting the sensors,acquiring data and calculating the distance in centimeters
@@ -356,6 +395,7 @@ void loop(){
 		}else if(sensor[i].distanta_cm >= 0 && sensor[i].distanta_cm <= dist04){
 			digitalWrite(BUZZER, HIGH);
 		}
+		blink1();
   }
 
   u8g.firstPage();
