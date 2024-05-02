@@ -255,15 +255,6 @@ unsigned long buzzPeriod2 = 200;
 unsigned long buzzPeriod3 = 100;
 unsigned long buzzPeriod4 = 50;
 
-unsigned long previousBlink = 0;
-unsigned long blinkPeriod1 = 500;
-unsigned long blinkPeriod2 = 200;
-unsigned long blinkPeriod3 = 100;
-unsigned long blinkPeriod4 = 50;
-
-int redState = LOW;
-int greenState = LOW;
-int blueState = LOW;
 
 void Buzz(){
 	if(currentTime - previousBuzz >= buzzPeriod1){
@@ -321,21 +312,6 @@ void Buzz4(){
 	}
 }
 
-void blink(){
-  if(currentTime - previousBlink >= blinkPeriod1){
-    previousBlink = currentTime;
-    if(redState == LOW){
-      redState = HIGH;
-    }else if(greenState == LOW){
-      greenState = HIGH;
-    }else if(blueState == LOW){
-      blueState = HIGH;
-    }
-    digitalWrite(RED1,redState);
-    digitalWrite(GREEN1,redState);
-    digitalWrite(BLUE1,blueState);
-  }
-}
 
 void setup(){
   //attributing pins to the sensors
@@ -405,7 +381,59 @@ void loop(){
 		}else if(sensor[i].distanta_cm >= 0 && sensor[i].distanta_cm <= dist04){
 			digitalWrite(BUZZER, HIGH);
 		}
-  blink();
+
+    if(sensor[0].distanta_cm >= dist01) {
+    digitalWrite(RED1,LOW);
+    digitalWrite(GREEN1,HIGH);
+    digitalWrite(BLUE1,LOW);
+    }else if(sensor[0].distanta_cm >= dist02 && sensor[0].distanta_cm <= dist01){
+    digitalWrite(RED1,HIGH);
+    digitalWrite(GREEN1,HIGH);
+    digitalWrite(BLUE1,LOW);
+    }else if(sensor[0].distanta_cm >= dist04 && sensor[0].distanta_cm <= dist03){
+    digitalWrite(RED1,HIGH);
+    digitalWrite(GREEN1,LOW);
+    digitalWrite(BLUE1,LOW);    
+    }else if(sensor[0].distanta_cm >= 0 && sensor[0].distanta_cm <= dist04){
+    digitalWrite(RED1,HIGH);
+    digitalWrite(GREEN1,HIGH);
+    digitalWrite(BLUE1,HIGH);    
+    }
+
+    if(sensor[1].distanta_cm >= dist01) {
+    digitalWrite(RED2,LOW);
+    digitalWrite(GREEN2,HIGH);
+    digitalWrite(BLUE2,LOW);
+    }else if(sensor[1].distanta_cm >= dist02 && sensor[1].distanta_cm <= dist01){
+    digitalWrite(RED2,HIGH);
+    digitalWrite(GREEN2,HIGH);
+    digitalWrite(BLUE2,LOW);
+    }else if(sensor[1].distanta_cm >= dist04 && sensor[1].distanta_cm <= dist03){
+    digitalWrite(RED2,HIGH);
+    digitalWrite(GREEN2,LOW);
+    digitalWrite(BLUE2,LOW);    
+    }else if(sensor[1].distanta_cm >= 0 && sensor[1].distanta_cm <= dist04){
+    digitalWrite(RED2,HIGH);
+    digitalWrite(GREEN2,HIGH);
+    digitalWrite(BLUE2,HIGH);    
+    }
+    if(sensor[2].distanta_cm >= dist01) {
+    digitalWrite(RED3,LOW);
+    digitalWrite(GREEN3,HIGH);
+    digitalWrite(BLUE3,LOW);
+    }else if(sensor[2].distanta_cm >= dist02 && sensor[2].distanta_cm <= dist01){
+    digitalWrite(RED3,HIGH);
+    digitalWrite(GREEN3,HIGH);
+    digitalWrite(BLUE3,LOW);
+    }else if(sensor[2].distanta_cm >= dist04 && sensor[2].distanta_cm <= dist03){
+    digitalWrite(RED3,HIGH);
+    digitalWrite(GREEN3,LOW);
+    digitalWrite(BLUE3,LOW);    
+    }else if(sensor[2].distanta_cm >= 0 && sensor[2].distanta_cm <= dist04){
+    digitalWrite(RED3,HIGH);
+    digitalWrite(GREEN3,HIGH);
+    digitalWrite(BLUE3,HIGH);    
+    }
   }
 
   u8g.firstPage();
