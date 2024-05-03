@@ -247,15 +247,20 @@ int dist02 = 15;
 int dist03 = 10;
 int dist04 = 5;
 
+//initializing the buzzer as LOW
 int buzzerState = LOW;
+
+//initializing the time when the board start working
 unsigned long currentTime = 0;
+
+//initializing different times for the buzzer to beep
 unsigned long previousBuzz = 0;
 unsigned long buzzPeriod1 = 500;
 unsigned long buzzPeriod2 = 200;
 unsigned long buzzPeriod3 = 100;
 unsigned long buzzPeriod4 = 50;
 
-
+//first function that makes the buzzer to beep
 void Buzz(){
 	if(currentTime - previousBuzz >= buzzPeriod1){
 		previousBuzz = currentTime;
@@ -266,10 +271,12 @@ void Buzz(){
 			buzzerState = LOW;
 		}
 		digitalWrite(BUZZER,buzzerState);
+    //printing buzz on serial port for debug
 		Serial.println("buzz");
 	}
 }
 
+//second function that makes the buzzer beep 
 void Buzz2(){
 	if(currentTime - previousBuzz >= buzzPeriod2){
 		previousBuzz = currentTime;
@@ -280,10 +287,12 @@ void Buzz2(){
 			buzzerState = LOW;
 		}
 		digitalWrite(BUZZER,buzzerState);
+    //printing buzz2 on serial port for debug
 		Serial.println("buzz2");
 	}
 }
 
+//third function that makes the buzzer to beep
 void Buzz3(){
 	if(currentTime - previousBuzz >= buzzPeriod3){
 		previousBuzz = currentTime;
@@ -294,10 +303,12 @@ void Buzz3(){
 			buzzerState = LOW;
 		}
 		digitalWrite(BUZZER,buzzerState);
+    //printing buzz3 on serial port for debug
 		Serial.println("buzz3");
 	}
 }
 
+//fourth function that makes the buzzer to beep
 void Buzz4(){
 	if(currentTime - previousBuzz >= buzzPeriod4){
 		previousBuzz = currentTime;
@@ -308,6 +319,7 @@ void Buzz4(){
 			buzzerState = LOW;
 		}
 		digitalWrite(BUZZER,buzzerState);
+    //printing buzz4 on serial port for debug
 		Serial.println("buzz4");
 	}
 }
@@ -352,7 +364,7 @@ void setup(){
 
 void loop(){
 
-
+  // initializint current time with millis function that counts the milliseconds passed from the start of the board
 	currentTime = millis();
   //starting the sensors,acquiring data and calculating the distance in centimeters
   for(int i = 0; i<NUMBER_OF_SENSORS; i++){
@@ -363,13 +375,13 @@ void loop(){
     sensor[i].distanta_cm = pulseIn(sensor[i].echo_pin, HIGH);
     sensor[i].distanta_cm = sensor[i].distanta_cm / 58;
   
-  //printing the values on serial port
-
+  //printing the values on serial port(debug)
  		Serial.print("Sensor ");
 		Serial.print(i);		
 		Serial.print("  ");				
 		Serial.println(sensor[i].distanta_cm);
 
+    //calling buzzer's beep functions depending on the distance
     if(sensor[i].distanta_cm >= dist01){
 		Buzz();
 		}else if(sensor[i].distanta_cm >= dist02 && sensor[i].distanta_cm <= dist01){
@@ -382,6 +394,7 @@ void loop(){
 			digitalWrite(BUZZER, HIGH);
 		}
 
+    //turning on different colors on the LEDs depending on the distance
     if(sensor[0].distanta_cm >= dist01) {
     digitalWrite(RED1,LOW);
     digitalWrite(GREEN1,HIGH);
@@ -436,11 +449,13 @@ void loop(){
     }
   }
 
+  //printing data on the OLED Display
   u8g.firstPage();
   do{
   u8g.drawBitmapP(29 ,0 ,16/8 ,12 ,bitmap_cm_unit);
   u8g.drawBitmapP(85 ,0 ,16/8 ,11 ,bitmap_sound);
 
+  //displaying full lines or dotted lines depending on the distance
   u8g.drawBitmapP(16 ,15 ,32/8 ,20 ,sensor[0].distanta_cm >= dist01 ? bitmap_senzor_stanga1_on : bitmap_senzor_stanga1_off);  
   u8g.drawBitmapP(20 ,26 ,32/8 ,19 ,sensor[0].distanta_cm >= dist02 ? bitmap_senzor_stanga2_on : bitmap_senzor_stanga2_off);
   u8g.drawBitmapP(22 ,36 ,32/8 ,19 ,sensor[0].distanta_cm >= dist03 ? bitmap_senzor_stanga3_on : bitmap_senzor_stanga3_off);
