@@ -242,10 +242,10 @@ int min_dist = 2; //minimum distance where the sensors are printing labels on th
 int max_dist = 400; //maximum distance where the sensors are printing labels on the oled
 
 //creating variables for calculating the labels printed on the oled
-int dist01 = 30;
-int dist02 = 15;
-int dist03 = 10;
-int dist04 = 5;
+int dist01 = 40;
+int dist02 = 30;
+int dist03 = 20;
+int dist04 = 10;
 
 int buzzerState = LOW;
 unsigned long currentTime = 0;
