@@ -204,12 +204,12 @@ const unsigned char bitmap_sound [] PROGMEM = {
 	0x44, 0x44, 0x40, 0x00, 0x7f, 0xc0
 };
 //define the pins of trigger and echo pins of the HC-SR04's
-#define PIN_TRIG_DREAPTA 23
-#define PIN_ECHO_DREAPTA 22
+#define PIN_TRIG_DREAPTA 27
+#define PIN_ECHO_DREAPTA 26
 #define PIN_TRIG_CENTRU 25
 #define PIN_ECHO_CENTRU 24
-#define PIN_TRIG_STANGA 27
-#define PIN_ECHO_STANGA 26
+#define PIN_TRIG_STANGA 23
+#define PIN_ECHO_STANGA 22
 //define the number of sensors
 #define NUMBER_OF_SENSORS 3
 
@@ -217,15 +217,15 @@ const unsigned char bitmap_sound [] PROGMEM = {
 #define BUZZER 28
 
 //define rgb leds
-#define RED1 2
-#define GREEN1 3
-#define BLUE1 4
+#define RED1 8
+#define GREEN1 9
+#define BLUE1 10
 #define RED2 5
 #define GREEN2 6
 #define BLUE2 7
-#define RED3 8
-#define GREEN3 9
-#define BLUE3 10
+#define RED3 2
+#define GREEN3 3
+#define BLUE3 4
 
 
 //grouping variables of the sensors in one structure
